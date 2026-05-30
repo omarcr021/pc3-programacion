@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using TaskAnalysisAPI.Data;
+using TaskAnalysisAPI.Services;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -16,6 +17,13 @@ builder.Services.AddControllers()
         // Serializar enums como string en las respuestas JSON
         options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
     });
+
+// Registrar servicio para consumir JSONPlaceholder
+builder.Services.AddHttpClient<IExternalTodoService, ExternalTodoService>(client =>
+{
+    client.BaseAddress = new Uri("https://jsonplaceholder.typicode.com/");
+    client.Timeout = TimeSpan.FromSeconds(10);
+});
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
