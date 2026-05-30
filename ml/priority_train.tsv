@@ -1,0 +1,31 @@
+Label	Text
+High	El sistema está en producción y fallando, se debe arreglar hoy
+High	Entrega crítica mañana, priorizar esta tarea
+High	Bloqueo en la integración continua, atención inmediata
+High	Cliente reporta error grave, resolver urgentemente
+High	Se necesita hotfix para producción ahora mismo
+High	Revisión urgente requerida antes del despliegue
+Medium	Completar antes del fin de semana
+Medium	Funcionalidad importante pero no bloqueante
+Medium	Revisión por pares durante el sprint
+Medium	Depende de otra tarea, planificar para la próxima iteración
+Medium	Mejoras solicitadas por producto, prioridad media
+Medium	Corregir defecto no crítico reportado en testing
+Low	Documentación y comentarios — puede esperar
+Low	Refactorización opcional, baja prioridad
+Low	Tarea para investigar nueva tecnología, no urgente
+Low	Actualizar README, baja prioridad
+Low	Tarea de limpieza de código sin impacto inmediato
+Low	Pequeña mejora estética, puede posponerse
+High	Incidente de seguridad reportado, requiere acción inmediata
+Medium	Preparar demo para stakeholders la próxima semana
+Low	Ejemplo o plantilla para futuros desarrollos
+Medium	Actualizar dependencia mayor en próxima release
+High	Task con fecha de entrega hoy a las 17:00
+Low	Tarea de aprendizaje interno sin urgencia
+Medium	Corregir warning en build antes del release
+High	Prioridad alta: desbloquea a varios equipos
+Low	Crear ticket informativo, priorizar bajo
+Medium	Coordinar con QA para pruebas antes del merge
+High	Problema reproducible en producción, resolver ya
+Low	Archivar artefactos antiguos, baja prioridad
