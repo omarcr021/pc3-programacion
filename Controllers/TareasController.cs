@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using TaskAnalysisAPI.Data;
 using TaskAnalysisAPI.Models;
 using TaskAnalysisAPI.Models.DTOs;
+using System.Globalization;
 
 namespace TaskAnalysisAPI.Controllers
 {
@@ -19,9 +20,84 @@ namespace TaskAnalysisAPI.Controllers
 
         // GET: api/tareas
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Tarea>>> GetTareas()
+        public async Task<ActionResult<IEnumerable<Tarea>>> GetTareas([FromQuery] string? estado, [FromQuery] string? prioridad, [FromQuery] string? fechaInicio, [FromQuery] string? fechaFin)
         {
-            var tareas = await _context.Tareas.ToListAsync();
+            // Validaciones y parseo de parámetros
+            bool hasEstado = false;
+            bool hasPrioridad = false;
+            EstadoTarea estadoEnum = default;
+            PrioridadTarea prioridadEnum = default;
+
+            DateTime? inicio = null;
+            DateTime? fin = null;
+
+            if (!string.IsNullOrWhiteSpace(estado))
+            {
+                if (!Enum.TryParse<EstadoTarea>(estado, true, out estadoEnum))
+                {
+                    return BadRequest(new { mensaje = "El estado no es válido." });
+                }
+                hasEstado = true;
+            }
+
+            if (!string.IsNullOrWhiteSpace(prioridad))
+            {
+                if (!Enum.TryParse<PrioridadTarea>(prioridad, true, out prioridadEnum))
+                {
+                    return BadRequest(new { mensaje = "La prioridad no es válida." });
+                }
+                hasPrioridad = true;
+            }
+
+            if (!string.IsNullOrWhiteSpace(fechaInicio))
+            {
+                if (!DateTime.TryParse(fechaInicio, CultureInfo.InvariantCulture, DateTimeStyles.None, out var fi))
+                {
+                    return BadRequest(new { mensaje = "fechaInicio no tiene un formato válido. Use yyyy-MM-dd." });
+                }
+                inicio = fi.Date;
+            }
+
+            if (!string.IsNullOrWhiteSpace(fechaFin))
+            {
+                if (!DateTime.TryParse(fechaFin, CultureInfo.InvariantCulture, DateTimeStyles.None, out var ff))
+                {
+                    return BadRequest(new { mensaje = "fechaFin no tiene un formato válido. Use yyyy-MM-dd." });
+                }
+                fin = ff.Date;
+            }
+
+            if (inicio.HasValue && fin.HasValue && inicio.Value > fin.Value)
+            {
+                return BadRequest(new { mensaje = "fechaInicio no puede ser mayor que fechaFin." });
+            }
+
+            var query = _context.Tareas.AsQueryable();
+
+            if (hasEstado)
+            {
+                query = query.Where(t => t.Estado == estadoEnum);
+            }
+
+            if (hasPrioridad)
+            {
+                query = query.Where(t => t.Prioridad == prioridadEnum);
+            }
+
+            if (inicio.HasValue && fin.HasValue)
+            {
+                query = query.Where(t => t.FechaVencimiento.HasValue && t.FechaVencimiento.Value.Date >= inicio.Value && t.FechaVencimiento.Value.Date <= fin.Value);
+            }
+            else if (inicio.HasValue)
+            {
+                query = query.Where(t => t.FechaVencimiento.HasValue && t.FechaVencimiento.Value.Date >= inicio.Value);
+            }
+            else if (fin.HasValue)
+            {
+                query = query.Where(t => t.FechaVencimiento.HasValue && t.FechaVencimiento.Value.Date <= fin.Value);
+            }
+
+            var tareas = await query.ToListAsync();
             return Ok(tareas);
         }
 
